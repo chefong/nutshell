@@ -1,8 +1,10 @@
-from flask import Flask, render_template
-# import youtube_dl as ydl
-from pytube import YouTube
+from flask import Flask, render_template, request
+import youtube_dl as ydl
+from pytube import YouTube, extract
+from os import path
 
 app = Flask(__name__)
+VID_DIR='./videos'
 
 @app.route('/')
 def welcome():
@@ -17,7 +19,7 @@ def download():
     yt_url = input('Input YouTube URL: ')
     print("Downloading...")
     video = YouTube(yt_url)
-    video.streams[0].download('./videos/')
+    video.streams[0].download(VID_DIR)
     print("Download completed!!")
     print("Length of video: ", video.length, "seconds")
     # uh gotta have a way to check if a video is already downloaded?
@@ -25,32 +27,16 @@ def download():
 
 @app.route('/api/submit', methods = ['POST'])
 def submit():
-    pass
-    # print(request.json['url'])
-    # if request.json is None:
-    #     return 'ERROR: no JSON in request body'
-    # yt_url = request.json['url']
-    # if not yt_url.startswith('https://youtube.com/') and not yt_url.startswith('https://www.youtube.com/'):
-    #     return { 'success': False, 'message': 'Invalid URL' }
+    print(request.json['url'])
+    if request.json is None:
+        return 'ERROR: no JSON in request body'
+    yt_url = request.json['url']
+    if not yt_url.startswith('https://youtube.com/') and not yt_url.startswith('https://www.youtube.com/'):
+        return { 'success': False, 'message': 'Invalid URL' }
 
-    # ydl = youtube_dl.YoutubeDL({
-    #     'forceduration': True, 
-    #     'forceid': True, 
-    #     'outtmpl': path.join(VID_DIR, '%(id)s.%(ext)s'), 
-    #     'format': 'mp4'})
-    
-    # sID = "a6kO--KRJBk"
-    # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    #     dictMeta = ydl.extract_info(
-    #         "https://www.youtube.com/watch?v={sID}".format(sID=sID),
-    #         download=True
-    #     )
-
-    # dictMeta['duration']
-    # print('yeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
-
-    # vid_id = result['id']
-    # filename = path.join(VID_DIR, f'{vid_id}.mp4')
+    vid_id = extract.video_id(yt_url)
+    filename = path.join(VID_DIR, f'{vid_id}.mp4')
+    return filename
 
 '''
 downloading video
