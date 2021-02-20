@@ -4,7 +4,7 @@
   min-height: 100vh;
 
   .Video__banner {
-    background-color: @secondary-color;
+    background-color: @secondary-background-color;
     height: 56px;
     display: flex;
     align-items: center;
@@ -154,7 +154,7 @@
           .Video__info-keypoint-badge {
             align-self: flex-start;
             color: @primary-color;
-            background-color: rgba(255, 229, 160, 0.5);;
+            background-color: @secondary-background-color;
             padding: 1px 8px;
             border-radius: 5px;
             margin-top: 4px;
@@ -163,4 +163,22 @@
       }
     }
   }
+}
+
+.Video__info-modal {
+  font-family: 'Circular';
+  color: @text-color;
+
+  .Video__info-modal-footer {
+    display: flex !important;
+    justify-content: flex-end;
+  }
+}
+
+.rs-modal-content {
+  padding: 24px !important;
+}
+
+.rs-modal-header-close {
+  top: auto;
 }
