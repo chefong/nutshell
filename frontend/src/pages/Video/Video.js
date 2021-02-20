@@ -5,6 +5,64 @@ import Button from '../../components/Button/Button';
 import logo from '../../assets/images/logo.svg';
 import { Link } from 'react-router-dom';
 import closeIcon from '../../assets/images/x.svg';
+import blackThumbnail from '../../assets/images/black-thumbnail.png';
+
+const mockTranscriptInfo = {
+  videoTitle: 'CSS Outline vs. Border',
+  keypoints: [
+    {
+      title: 'Keypoint 1',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
+    },
+    {
+      title: 'Keypoint 2',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
+    },
+    {
+      title: 'Keypoint 3',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
+    },
+    {
+      title: 'Keypoint 1',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
+    },
+    {
+      title: 'Keypoint 2',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
+    },
+    {
+      title: 'Keypoint 3',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
+    },
+  ],
+};
+
+const mockKeypointsInfo = [
+  {
+    title: 'Adding outlines won’t influence the layout. asd a jo oaj fo joiaj a  fopdsaijfsaojf ',
+    timestamp: '0:45',
+  },
+  {
+    title: 'Adding outlines won’t influence the layout.',
+    timestamp: '0:45',
+  },
+  {
+    title: 'Adding outlines won’t influence the layout.',
+    timestamp: '0:45',
+  },
+  {
+    title: 'Adding outlines won’t influence the layout.',
+    timestamp: '0:45',
+  },
+  {
+    title: 'Adding outlines won’t influence the layout.',
+    timestamp: '0:45',
+  },
+  {
+    title: 'Adding outlines won’t influence the layout.',
+    timestamp: '0:45',
+  },
+];
 
 function Video() {
   const [showBanner, setShowBanner] = useState(true);
@@ -27,13 +85,41 @@ function Video() {
     <div className="Video">
       <div className="Video__navbar">
         <img src={logo} alt=""/>
-        <Link to="/"><Button appearance="primary">Start Again</Button></Link>
+        <Link to="/" className="Video__navbar-back"><Button appearance="primary">Start Again</Button></Link>
       </div>
       {showBanner && renderInfoBanner()}
       <div className="Video__player">
         <Player src='http://media.w3.org/2010/05/bunny/movie.mp4' fluid={false} height={500} width="100%">
           <BigPlayButton position="center" />
         </Player>
+      </div>
+      <div className="Video__info">
+        <div className="Video__info-transcript">
+          <div className="Video__info-transcript-header">
+            <h2 className="Video__info-transcript-title">{mockTranscriptInfo.videoTitle}</h2>
+            <Button appearance="ghost">Original Video</Button>
+          </div>
+          {mockTranscriptInfo.keypoints.map(keypoint => (
+            <div className="Video__info-transcript-keypoint">
+              <h3 className="Video__info-transcript-keypoint-title">{keypoint.title}</h3>
+              <p className="Video__info-transcript-keypoint-description">{keypoint.description}</p>
+            </div>
+          ))}
+        </div>
+        <div className="Video__info-keypoints">
+          <h3 className="Video__info-keypoints-title">Keypoints</h3>
+          {mockKeypointsInfo.map((keypoint, index) => (
+            <div className="Video__info-keypoint">
+              <img src={blackThumbnail} alt=""/>
+              <div className="Video__info-keypoint-metadata">
+                <p className="Video__info-keypoint-metadata-title">{index + 1}. {keypoint.title}</p>
+                <div className="Video__info-keypoint-badge">
+                  {keypoint.timestamp}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

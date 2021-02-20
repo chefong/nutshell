@@ -17,3 +17,9 @@ body {
   font-family: "Circular";
   src: url("./assets/fonts/lineto-circular-pro-book.ttf");
 }
+
+@font-face {
+  font-family: "Circular";
+  font-weight: 900;
+  src: url("./assets/fonts/lineto-circular-pro-bold.ttf");
+}
