@@ -17,13 +17,15 @@ const loadingStages = [
   'Stitching video',
 ];
 
+const lottieSize = 428;
+
 function Loading() {
   return (
     <div className="Loading">
       <div className="Loading__lottie">
         <Lottie options={defaultOptions}
-          height={400}
-          width={400}
+          height={lottieSize}
+          width={lottieSize}
         />
       </div>
       <div className="Loading__steps">

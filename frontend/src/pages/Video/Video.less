@@ -1,5 +1,31 @@
+@import '../../variables.less';
+
 .Video {
   min-height: 100vh;
+
+  .Video__banner {
+    background-color: @secondary-color;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 44px;
+
+    .Video__banner-close {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .Video__banner-link {
+      text-decoration: underline;
+      color: @primary-color;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
 
   .Video__navbar {
     height: 96px;

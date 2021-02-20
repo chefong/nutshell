@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Home.less';
-import { Button } from 'rsuite';
+import { Button, Slider } from 'rsuite';
 import Input from '../../components/Input/Input';
 import logo from '../../assets/images/logo.svg';
 import githubButton from '../../assets/images/github-button.svg';
@@ -10,23 +10,75 @@ import keypointsImage from '../../assets/images/about-keypoints.svg';
 import rightArrow from '../../assets/images/arrow-right.svg';
 import aboutImage from '../../assets/images/about.svg';
 
-function Home() {
+const sliderValues = {
+  min: 1,
+  max: 10,
+};
+
+const averageValue = Math.floor((sliderValues.max + sliderValues.min) / 2);
+
+function Home(props) {
+  const { history } = props;
   const [videoLink, setVideoLink] = useState('');
+  const [showSlider, setShowSlider] = useState(false);
+  const [videoLength, setVideoLength] = useState(averageValue);
+
+  const handleNextClick = (e) => {
+    e.preventDefault();
+    setShowSlider(true);
+  };
+
+  const handleBackClick = (e) => {
+    e.preventDefault();
+    setShowSlider(false);
+  };
 
   const handleInputChange = (value) => {
     setVideoLink(value);
   };
 
-  const handleSubmit = (e) => {
+  const handleVideoSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting value", videoLink);
+    console.log("Submitting value", videoLink, videoLength);
+    history.push('/loading');
   };
 
   const renderInputForm = () => {
     return (
       <div className="Home__input-form">
+        <p className="Home__form-description">Nutshell is a learning tool that helps students and learners of all levels optimize their video learning experience. Got a one hour lecture to get through? We’ll extrapolate the good parts and present it to you in a nutshell.</p>
         <Input placeholder="Enter a video link to begin" className="Home__input" onChange={handleInputChange} value={videoLink} />
-        <Button appearance="primary" className="Home__input-button" onClick={handleSubmit}>Get Crackin'</Button>
+        <Button appearance="primary" className="Home__input-button" onClick={handleNextClick}>Next</Button>
+      </div>
+    );
+  };
+
+  const handleSliderChange = (value) => {
+    setVideoLength(value);
+  };
+
+  const renderSliderForm = () => {
+    return (
+      <div className="Home__input-slider">
+        <p className="Home__form-description">Nice video! <br /> How short would you like the cropped video to be?</p>
+        <div className="Home__slider">
+          <Slider
+            progress
+            defaultValue={averageValue}
+            max={sliderValues.max}
+            min={sliderValues.min}
+            onChange={handleSliderChange}
+            value={videoLength}
+          />
+          <div className="Home__slider-labels">
+            <p className="Home__slider-label">{sliderValues.min} min</p>
+            <p className="Home__slider-label">{sliderValues.max} min</p>
+          </div>
+        </div>
+        <div className="Home__slider-buttons">
+          <Button appearance="ghost" className="Home__slider-back" onClick={handleBackClick}>Back</Button>
+          <Button appearance="primary" className="Home__slider-submit" onClick={handleVideoSubmit}>Get Crackin'</Button>
+        </div>
       </div>
     );
   };
@@ -46,9 +98,12 @@ function Home() {
       <div className="Home__landing">
         <div className="Home__content">
           <h1 className="Home__content-title">Making video-based learning more productive and efficient.</h1>
-          <p className="Home__content-description">Nutshell is a learning tool that helps students and learners of all levels optimize their video learning experience. Got a one hour lecture to get through? We’ll extrapolate the good parts and present it to you in a nutshell.</p>
         </div>
-        {renderInputForm()}
+        {showSlider ? (
+          renderSliderForm()
+        ) : (
+          renderInputForm()
+        )}
       </div>
       <div className="Home__display">
         <div className="Home__display-content">
