@@ -5,6 +5,8 @@ import {
   Route
 } from 'react-router-dom';
 import Home from './pages/Home/Home';
+import Loading from './pages/Loading/Loading';
+import Video from './pages/Video/Video';
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route exact path="/loading" component={Loading} />
+          <Route exact path="/video" component={Video} />
         </Switch>
       </Router>
     </div>

@@ -1,10 +1,47 @@
 .Home {
+  position: relative;
+
+  .Home__navbar {
+    height: 96px;
+    background-color: white;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 122px;
+
+    .Home__navbarlinks {
+      .Home__navbarlinks-list {
+        list-style-type: none;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+
+        * {
+          margin-left: 75px;
+        }
+
+        *:hover {
+          cursor: pointer;
+        }
+
+        li {
+          float: left;
+        }
+      }
+    }
+  }
+
   .Home__landing {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     min-height: 100vh;
+    margin-top: -96px;
 
     .Home__content {
       text-align: center;
@@ -24,29 +61,72 @@
       }
     }
   
-    .Home__submit {
+    .Home__input-form {
       display: flex;
+      flex-direction: column;
       align-items: center;
       margin-top: 16px;
   
       .Home__input {
         height: 40px;
-        width: 530px;
+        width: 734px;
         box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
         border: none;
         border-radius: 5px;
         background-color: white;
-        padding: 10px 25px;
+        padding: 10px 16px;
   
         &:focus {
           outline: none;
         }
       }
   
-      .Home__button {
+      .Home__input-button {
         height: 40px;
-        margin-left: 12px;
         padding: 10px 20px;
+        margin-top: 20px;
+      }
+    }
+  }
+
+  .Home__display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 124px;
+    margin-bottom: 150px;
+
+    * {
+      margin: 0 20px;
+    }
+
+    .Home__display-content {
+      .Home__display-content-title {
+        font-family: 'Mogena';
+        font-weight: 400;
+      }
+  
+      .Home__display-content-description {
+        margin-top: 18px;
+      }
+
+      .Home__learn {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 18px;
+        justify-content: flex-start;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        .Home__learn-link {
+          color: #F5A837;
+          font-weight: 700;
+          margin-right: 12px;
+          margin-left: 0;
+        }
       }
     }
   }
@@ -57,10 +137,10 @@
     background-size: cover;
     display: flex;
     align-items: center;
+    justify-content: center;
+    padding: 0 124px;
 
     .Home__about-content {
-      padding-left: 80px;
-
       .Home__about-title {
         font-family: 'Mogena';
         font-weight: 400;
