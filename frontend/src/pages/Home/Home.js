@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import './Home.less';
-import { Button, Slider } from 'rsuite';
+import { Slider } from 'rsuite';
 import Input from '../../components/Input/Input';
+import Button from '../../components/Button/Button';
 import logo from '../../assets/images/logo.svg';
 import githubButton from '../../assets/images/github-button.svg';
+import githubIcon from '../../assets/images/github.svg';
 import videoImage from '../../assets/images/about-video.svg';
 import transcriptImage from '../../assets/images/about-transcript.svg';
 import keypointsImage from '../../assets/images/about-keypoints.svg';
 import rightArrow from '../../assets/images/arrow-right.svg';
 import aboutImage from '../../assets/images/about.svg';
+import clsx from 'clsx';
 
 const sliderValues = {
   min: 1,
@@ -17,19 +20,39 @@ const sliderValues = {
 
 const averageValue = Math.floor((sliderValues.max + sliderValues.min) / 2);
 
+const displayContent = [
+  {
+    title: 'Watch a short, strategically stitched video!',
+    description: 'Submit a long video and we’ll present to you a shorter video that only showcases the most important parts of the video.',
+    image: videoImage,
+    imagePlacement: 'right',
+  },
+  {
+    title: 'In a time crunch? Just read the transcript!',
+    description: 'Sometimes reading things is faster than watching things. We can relate! Therefore, we’ve provided the transcripts to the most important parts of the video for you!',
+    image: transcriptImage,
+    imagePlacement: 'left',
+  },
+  {
+    title: 'Easily visualize the most important keypoints.',
+    description: 'Figuring out the important parts of a long video is hard. Nutshell does the hard work for you and provides the timestamps and the keypoints of the entire video.',
+    image: keypointsImage,
+    imagePlacement: 'right',
+  },
+];
+
 function Home(props) {
   const { history } = props;
   const [videoLink, setVideoLink] = useState('');
   const [showSlider, setShowSlider] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [videoLength, setVideoLength] = useState(averageValue);
 
-  const handleNextClick = (e) => {
-    e.preventDefault();
+  const handleNextClick = () => {
     setShowSlider(true);
   };
 
-  const handleBackClick = (e) => {
-    e.preventDefault();
+  const handleBackClick = () => {
     setShowSlider(false);
   };
 
@@ -37,17 +60,16 @@ function Home(props) {
     setVideoLink(value);
   };
 
-  const handleVideoSubmit = (e) => {
-    e.preventDefault();
+  const handleVideoSubmit = () => {
     console.log("Submitting value", videoLink, videoLength);
-    history.push('/loading');
+    history.push('/video');
   };
 
   const renderInputForm = () => {
     return (
       <div className="Home__input-form">
         <p className="Home__form-description">Nutshell is a learning tool that helps students and learners of all levels optimize their video learning experience. Got a one hour lecture to get through? We’ll extrapolate the good parts and present it to you in a nutshell.</p>
-        <Input placeholder="Enter a video link to begin" className="Home__input" onChange={handleInputChange} value={videoLink} />
+        <Input placeholder="Enter a YouTube link to begin" onChange={handleInputChange} value={videoLink} />
         <Button appearance="primary" className="Home__input-button" onClick={handleNextClick}>Next</Button>
       </div>
     );
@@ -64,6 +86,7 @@ function Home(props) {
         <div className="Home__slider">
           <Slider
             progress
+            disabled={isLoading}
             defaultValue={averageValue}
             max={sliderValues.max}
             min={sliderValues.min}
@@ -76,8 +99,22 @@ function Home(props) {
           </div>
         </div>
         <div className="Home__slider-buttons">
-          <Button appearance="ghost" className="Home__slider-back" onClick={handleBackClick}>Back</Button>
-          <Button appearance="primary" className="Home__slider-submit" onClick={handleVideoSubmit}>Get Crackin'</Button>
+          <Button
+            appearance="ghost"
+            className="Home__slider-back"
+            onClick={handleBackClick}
+            disabled={isLoading}
+          >
+            Back
+          </Button>
+          <Button
+            appearance="primary"
+            className="Home__slider-submit"
+            onClick={handleVideoSubmit}
+            loading={isLoading}
+          >
+            Get Crackin'
+          </Button>
         </div>
       </div>
     );
@@ -91,7 +128,10 @@ function Home(props) {
           <ul className="Home__navbarlinks-list">
             <li>Features</li>
             <li>About</li>
-            <img src={githubButton} alt=""/>
+            <Button appearance="ghost">
+              <img className="Home__navbar-github-icon" src={githubIcon} alt=""/>
+              <p>GitHub</p>
+            </Button>
           </ul>
         </div>
       </div>
@@ -105,39 +145,19 @@ function Home(props) {
           renderInputForm()
         )}
       </div>
-      <div className="Home__display">
-        <div className="Home__display-content">
-          <h2 className="Home__display-content-title">Watch a short, strategically stitched video!</h2>
-          <p className="Home__display-content-description">Submit a long video and we’ll present to you a shorter video that only showcases the most important parts of the video.</p>
-          <div className="Home__learn">
-            <p className="Home__learn-link">Learn More</p>
-            <img src={rightArrow} alt=""/>
+      {displayContent.map(content => (
+        <div className={clsx('Home__display', content.imagePlacement === 'right' && 'Home__display--reverse')}>
+          <img src={content.image} alt=""/>
+          <div className="Home__display-content">
+            <h2 className="Home__display-content-title">{content.title}</h2>
+            <p className="Home__display-content-description">{content.description}</p>
+            <div className="Home__learn">
+              <p className="Home__learn-link">Learn More</p>
+              <img src={rightArrow} alt=""/>
+            </div>
           </div>
         </div>
-        <img src={videoImage} alt=""/>
-      </div>
-      <div className="Home__display">
-        <img src={transcriptImage} alt=""/>
-        <div className="Home__display-content">
-          <h2 className="Home__display-content-title">In a time crunch? Just read the transcript!</h2>
-          <p className="Home__display-content-description">Sometimes reading things is faster than watching things. We can relate! Therefore, we’ve provided the transcripts to the most important parts of the video for you!</p>
-          <div className="Home__learn">
-            <p className="Home__learn-link">Learn More</p>
-            <img src={rightArrow} alt=""/>
-          </div>
-        </div>
-      </div>
-      <div className="Home__display">
-        <div className="Home__display-content">
-          <h2 className="Home__display-content-title">Easily visualize the most important keypoints.</h2>
-          <p className="Home__display-content-description">Figuring out the important parts of a long video is hard. Nutshell does the hard work for you and provides the timestamps and the keypoints of the entire video.</p>
-          <div className="Home__learn">
-            <p className="Home__learn-link">Learn More</p>
-            <img src={rightArrow} alt=""/>
-          </div>
-        </div>
-        <img src={keypointsImage} alt=""/>
-      </div>
+      ))}
       <div className="Home__about">
         <div className="Home__about-content">
           <h2 className="Home__about-title">About Nutshell</h2>

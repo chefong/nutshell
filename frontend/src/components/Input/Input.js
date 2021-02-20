@@ -1,7 +1,8 @@
 import React from 'react';
+import './Input.less';
 
 function Input(props) {
-  const { onChange, className, value } = props;
+  const { onChange, value, placeholder } = props;
 
   const handleChange = (e) => {
     const { target: { value } } = e;
@@ -9,7 +10,13 @@ function Input(props) {
   };
 
   return (
-    <input type="text" placeholder="Enter a video link to begin" onChange={handleChange} className={className} value={value} />
+    <input
+      className="Input"
+      type="text"
+      placeholder={placeholder}
+      onChange={handleChange}
+      value={value}
+    />
   );
 }
 
