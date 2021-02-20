@@ -54,7 +54,7 @@
       box-shadow: @card-shadow;
       background-color: white;
       width: 704px;
-      padding: 36px;
+      padding: 0 36px 14px 36px;
       border-radius: 20px;
       margin-right: 20px;
       max-height: 500px;
@@ -75,6 +75,11 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+        position: sticky;
+        top: 0;
+        background-color: white;
+        padding-top: 36px;
+        padding-bottom: 36px;
 
         .Video__info-transcript-title {
           font-size: 24px;
@@ -91,7 +96,10 @@
       .Video__info-transcript-keypoint-title {
         font-size: 18px;
         line-height: normal;
-        margin-top: 22px;
+      }
+
+      .Video__info-transcript-keypoint-description {
+        margin-bottom: 22px;
       }
     }
 
@@ -100,7 +108,7 @@
       background-color: white;
       width: 466px;
       border-radius: 20px;
-      padding: 36px;
+      padding: 0 36px 14px 36px;
       max-height: 500px;
       overflow-y: scroll;
       
@@ -117,12 +125,17 @@
       .Video__info-keypoints-title {
         font-size: 18px;
         line-height: normal;
+        position: sticky;
+        top: 0;
+        background-color: white;
+        padding-top: 36px;
+        padding-bottom: 36px;
       }
 
       .Video__info-keypoint {
         display: flex;
         flex-direction: row;
-        margin-top: 24px;
+        margin-bottom: 24px;
 
         .Video__info-keypoint-metadata {
           display: flex;
@@ -141,7 +154,7 @@
           .Video__info-keypoint-badge {
             align-self: flex-start;
             color: @primary-color;
-            background-color: @secondary-color;
+            background-color: rgba(255, 229, 160, 0.5);;
             padding: 1px 8px;
             border-radius: 5px;
             margin-top: 4px;
