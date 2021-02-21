@@ -115,7 +115,7 @@ def make_video(in_filename, intervals, out_filename):
     final.write_videofile(out_filename)
 
 
-def process_video(url):
+def process_video(url, ratio=0.5):
     video = YouTube(url)
     vid_id = extract.video_id(url)
     filename = f'{vid_id}'
@@ -134,7 +134,7 @@ def process_video(url):
     upload_to_bucket(bucket_audio, audio_path)
     words = transcribe_gcs_with_word_time_offsets(bucket_audio)
     doc, sents = words2sents(words)
-    intervals = summarize(doc, sents)
+    intervals = summarize(doc, sents, ratio=ratio)
     make_video(video_path, intervals, output_path)
 
 url = 'https://www.youtube.com/watch?v=7ESqznshez0'
