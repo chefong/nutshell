@@ -20,6 +20,23 @@
   .Loading__steps {
     padding-bottom: 100px;
   }
+
+  .Loading__etaBanner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 648px;
+    background-color: @secondary-background-color;
+    padding: 0 24px;
+    height: 56px;
+
+    .Loading__etaBanner-close {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .rs-steps-item-status-process {

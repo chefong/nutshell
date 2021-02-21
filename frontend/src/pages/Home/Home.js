@@ -79,7 +79,7 @@ function Home(props) {
       let response;
 
       response = await axios.post(`${BASE_URL}/submit`, { videoLink, videoPercentage });
-      const { alreadyShortened, videoId, inProgress } = response.data;
+      const { alreadyShortened, videoId, inProgress, etaTime } = response.data;
       console.log("Response from POST", response);
 
       if (alreadyShortened) {
@@ -89,7 +89,7 @@ function Home(props) {
         if (!inProgress) axios.get(`${BASE_URL}/process/${videoId}/${videoPercentage}`);
         localStorage.setItem('processingVideoId', videoId);
         console.log("Going to /loading");
-        history.push('/loading');
+        history.push('/loading', { etaTime });
       }
 
       setIsLoading(false);
@@ -164,10 +164,12 @@ function Home(props) {
           <ul className="Home__navbarlinks-list">
             <li>Features</li>
             <li>About</li>
-            <Button appearance="ghost">
-              <img className="Home__navbar-github-icon" src={githubIcon} alt=""/>
-              <p>GitHub</p>
-            </Button>
+            <a href="https://github.com/chefong/SacHacks2021" target="_blank" rel="noreferrer" className="Home__navbar-button-link">
+              <Button appearance="ghost">
+                <img className="Home__navbar-github-icon" src={githubIcon} alt=""/>
+                <p>GitHub</p>
+              </Button>
+            </a>
           </ul>
         </div>
       </div>
@@ -187,10 +189,10 @@ function Home(props) {
           <div className="Home__display-content">
             <h2 className="Home__display-content-title">{content.title}</h2>
             <p className="Home__display-content-description">{content.description}</p>
-            <div className="Home__learn">
+            {/* <div className="Home__learn">
               <p className="Home__learn-link">Learn More</p>
               <img src={rightArrow} alt=""/>
-            </div>
+            </div> */}
           </div>
         </div>
       ))}
