@@ -46,18 +46,22 @@ def submit():
     video = YouTube(yt_url)
     vid_id = extract.video_id(yt_url)
     vidPerc = request.json['videoPercentage']
+    vidTitle = video.title
 
     cur = con.cursor()
-    cur.execute("SELECT vid_id FROM nutstash.nutstash WHERE vid_id = %s", (vid_id,))
+    cur.execute("SELECT vid_id, percent, stage FROM nutstash.nutstash WHERE vid_id = %s AND percent=%s", (vid_id, vidPerc))
     rows = cur.fetchall()
     if rows:
-        return { 'success': True, 'alreadyShortened': True, 'videoId': vid_id }
+        row = rows[0]
+        if row['stage'] != 'done':
+            return { 'success': True, 'alreadyShortened': True, 'inProgress': True, 'videoId': vid_id }
+        return { 'success': True, 'alreadyShortened': True, 'inProgress': False, 'videoId': vid_id }
 
     # unique index prevents race condition
     cur = con.cursor()
     try:
-        cur.execute("INSERT INTO nutstash.nutstash (videolink, vid_id, percent, stage) VALUES (%s, %s, %s, %s)",
-            (yt_url, vid_id, vidPerc, 'pending'))
+        cur.execute("INSERT INTO nutstash.nutstash (videolink, vid_id, percent, stage, title) VALUES (%s, %s, %s, %s, %s)",
+            (yt_url, vid_id, vidPerc, 'pending',  vidTitle))
     except Exception as e:
         print(f'Failed to commit: {e}')
         con.rollback()
@@ -75,32 +79,36 @@ def submit():
 
     # return filename
 
-# @app.route('/video/<videoId>', methods = ['GET'])
-# def video(videoId):
-#     cur = con.cursor()
-#     cur.execute("SELECT shortenedLink, timeandsentence, videoLink, stats, sections FROM nutstash.nutstash WHERE vid_id = %s", (videoId,))
-#     rows = cur.fetchall()
-
-#     return {
-#         'shortenedLink': rows[0][0],
-#         'timeAndSentence': rows[0][1],
-#         'videoLink': rows[0][2],
-#         'stats': rows[0][3],
-#         'sections': rows[0][4]
-#     }
-
-@app.route('/process/<videoId>', methods = ['GET'])
-def video(videoId):
+@app.route('/video/<videoId>/<percent>', methods = ['GET'])
+def video(videoId, percent):
     cur = con.cursor()
-    cur.execute("SELECT videolink, percent FROM nutstash.nutstash WHERE vid_id = %s", (videoId,))
+    cur.execute("SELECT shortenedLink, timeandsentence, videoLink, stats, sections, title FROM nutstash.nutstash WHERE vid_id = %s AND percent = %s", (videoId, percent))
+    rows = cur.fetchall()
+
+    return {
+        'shortenedLink': rows[0][0],
+        'timeAndSentence': rows[0][1],
+        'videoLink': rows[0][2],
+        'stats': rows[0][3],
+        'sections': rows[0][4],
+        'title': rows[0][5]
+    }
+
+@app.route('/process/<videoId>/<percent>', methods = ['GET'])
+def flask_process_video(videoId, percent):
+    cur = con.cursor()
+    cur.execute("SELECT videolink, percent FROM nutstash.nutstash WHERE vid_id = %s AND percent = %s", (videoId, percent))
     rows = cur.fetchall()
     if not rows:
         return { 'status': 'fail', 'message': 'Invalid video ID' }
-    video_link, percent = rows[0]
-    process_video(video_link, con, ratio=percent/100, cb=update_progress)
+    video_link, percent_db = rows[0]
+    process_video(video_link, con, ratio=percent_db/100, cb=update_progress)
+    cur = con.cursor()
+    cur.execute("UPDATE nutstash.nutstash SET stage=%s WHERE vid_id = %s", ('done', videoId))
+    con.commit()
     socketio.emit('statusUpdate', {
         'stage': 'done',
-        'percentage': percent,
+        'percentage': percent_db,
         'videoId': videoId
     }, room=lookup[videoId])
     return { 'status': 'success' }

@@ -5,8 +5,11 @@ from pytube import YouTube, extract
 from google.cloud import storage
 from moviepy.editor import *
 from datetime import timedelta
+from .readingStats import *
+from os import path
 
 BUCKET_NAME = 'nutshell-audio'
+THUMBNAIL_DIR = 'thumbnails'
 
 def upload_to_bucket(blob_name, path_to_file):
     storage_client = storage.Client.from_service_account_json(
@@ -18,6 +21,23 @@ def upload_to_bucket(blob_name, path_to_file):
 
     return blob.public_url
 
+def upload_thumbnails(video_id):
+    i = 0
+    storage_client = storage.Client.from_service_account_json(
+        'gcp.json')
+
+    bucket = storage_client.get_bucket(BUCKET_NAME)
+    urls = []
+
+    while True:
+        loc = f'{THUMBNAIL_DIR}/{video_id}_{i}.png'
+        if not path.exists(loc):
+            break
+        blob = bucket.blob(loc)
+        blob.upload_from_filename(loc)
+        urls.append(blob.public_url)
+        i += 1
+    return urls
 
 def transcribe_gcs_with_word_time_offsets(filename):
     """Transcribe the given audio file asynchronously and output the word time
@@ -91,40 +111,91 @@ def words2sents(words):
 
 def summarize(doc, sents, ratio=0.5):
     model = Summarizer()
-    N = 5
     summary = model(doc, ratio=ratio)
     print(doc)
     # print(cnt)
 
+    used_sents = []
     intervals = []
     for sent, st, end in sents:
         if sent in summary:
             intervals.append((st, end))
+            used_sents.append(sent)
     print(intervals)
-    intervals = merge_intervals(intervals)
-    return intervals, summary
+    adj_intervals = merge_intervals(intervals)
+    return adj_intervals, intervals, summary, used_sents
 
-def make_video(in_filename, intervals, out_filename):
+def make_video(video_id, in_filename, intervals, raw_intervals, out_filename):
     clip = VideoFileClip(in_filename)
     clips = []
+    thumbnails = []
+
     for i in range(len(intervals)):
         st, end = intervals[i]
+        # center = (end - st) / 2 + st
         clips.append(clip.subclip(st, end))
 
+    for i in range(len(raw_intervals)):
+        st, end = raw_intervals[i]
+        thumb_path = f'{THUMBNAIL_DIR}/{video_id}_{i}.png'
+        clip.save_frame(thumb_path, st)
+        thumbnails.append(thumb_path)
+
     final = concatenate_videoclips(clips)
-    final.write_videofile(out_filename)
+    try:
+        final.write_videofile(out_filename, threads=2, logger=None)
+        print("Saved .mp4 without Exception at {}".format(out_filename))
+    except IndexError:
+        # Short by one frame, so get rid on the last frame:
+        final = final.subclip(t_end=(clip.duration - 1.0/final.fps))
+        final.write_videofile(out_filename, threads=2, logger=None)
+        print("Saved .mp4 after Exception at {}".format(out_filename))
+    return thumbnails
 
-def get_stats(sents):
-    return { 'foo': 'bar' }
+def get_stats(doc, summary, sents, short_int):
+    levels, xAxis = levelForMin(sents)
+    read_time_original = readTime(doc)
+    read_time_short = readTime(summary)
+    read_time_diff = (read_time_short - read_time_original) / read_time_original * 100
+    # total time of videos
+    total_short = sum(x[1] - x[0] for x in short_int)
+    total_orig = sum(x[2] - x[1] for x in sents)
+    per_diff = (total_short - total_orig) / total_orig * 100
 
-# def make_sections(sents, summary):
-#     out = []
-#     curr = []
-#     for sent in sents:
-#         if sent in summary:
+    return json.dumps({
+        'readingLevels': levels,
+        'readTimeOriginal': read_time_original,
+        'readTimeShort': read_time_short,
+        'readTimePercentDiff': read_time_diff,
+        'xAxisLabels': xAxis,
+        'shortenedLength': total_short,
+        'percentShortened': per_diff
+    })
 
-#         else:
-#             curr.append(sent[0])
+def make_sections(sents, summary):
+    out = []
+    key_sent = 'Introduction'
+    curr = []
+    for sent in sents:
+        if sent[0] in summary:
+            if key_sent == 'Introduction' and not curr:
+                key_sent = sent[0]
+                continue
+
+            out.append({
+                'keySentence': key_sent,
+                'sentences': ' '.join(curr)
+            })
+            curr = []
+            key_sent = sent[0]
+        else:
+            curr.append(sent[0])
+    if curr:
+        out.append({
+            'keySentence': 'Conclusion',
+            'sentences': ' '.join(curr)
+        })
+    return json.dumps(out)
 
 
 def process_video(url, conn, cb=lambda:None, ratio=0.5):
@@ -151,14 +222,27 @@ def process_video(url, conn, cb=lambda:None, ratio=0.5):
     words = transcribe_gcs_with_word_time_offsets(bucket_audio)
     doc, sents = words2sents(words)
     cb(vid_id, 'summarizing')
-    intervals, summary = summarize(doc, sents, ratio=ratio)
+    intervals, raw_intervals, summary, used_sents = summarize(doc, sents, ratio=ratio)
     cb(vid_id, 'stitching')
-    make_video(video_path, intervals, output_path)
 
-    # cur = conn.cursor()
-    # cur.execute("UPDATE nutstash.nutstash SET transcript=%s, timeandsentence=%s, stats=%s, sections=%s WHERE vid_id = %s",
-    #     (doc, json.dumps(sents), get_stats(), make_sections(sents, summary), vid_id))
-    # conn.commit()
+    thumbnails = make_video(vid_id, video_path, intervals, raw_intervals, output_path)
+    print('Final upload to GCP')
+    pub_url = upload_to_bucket(f'videos/{vid_id}.mp4', output_path)
+    print('Uploading thumbnails to GCP...')
+    thumbnail_urls = upload_thumbnails(vid_id)
+
+    print('HMMMMMMMM: ', len(used_sents), len(raw_intervals), len(thumbnails))
+    super_sents = []
+    curr_total = 0
+    for i in range(len(raw_intervals)):
+        st, end = raw_intervals[i]
+        diff = (end - st)
+        super_sents.append([used_sents[i], curr_total, curr_total + diff, thumbnail_urls[i]])
+        curr_total += diff
+    cur = conn.cursor()
+    cur.execute("UPDATE nutstash.nutstash SET transcript=%s, timeandsentence=%s, stats=%s, sections=%s, shortenedlink=%s WHERE vid_id = %s",
+        (doc, json.dumps(super_sents), get_stats(doc, summary, sents, intervals), make_sections(sents, summary), pub_url, vid_id))
+    conn.commit()
 
 '''
 downloading video
