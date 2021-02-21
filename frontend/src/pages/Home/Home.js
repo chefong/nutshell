@@ -102,7 +102,7 @@ function Home(props) {
   const renderInputForm = () => {
     return (
       <div className="Home__input-form">
-        <p className="Home__form-description">Nutshell is a learning tool that helps students and learners of all levels optimize their video learning experience. Got a one hour lecture to get through? We’ll extrapolate the good parts and present it to you in a nutshell.</p>
+        <p className="Home__form-description">Nutshell is a learning tool that helps students and learners of all levels optimize their video learning experience. Got a long video to get through? We’ll extrapolate the good parts and present it to you in a nutshell.</p>
         <Input placeholder="Enter a YouTube link to begin" onChange={handleInputChange} value={videoLink} />
         <Button appearance="primary" className="Home__input-button" onClick={handleNextClick}>Next</Button>
       </div>
