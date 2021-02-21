@@ -6,6 +6,12 @@ import json
 from lib.pipeline import *
 from flask_socketio import SocketIO, send, emit
 from flask_cors import CORS
+import pickle
+import numpy as np
+
+with open('model.pkl', 'rb') as f:
+    model = pickle.load(f)
+    print('model pickle loaded!')
 
 app = Flask(__name__)
 CORS(app)
@@ -51,12 +57,26 @@ def submit():
     vidTitle = video.title
     vidLength = video.length
 
+    vals = np.zeros((1, 2))
+    vals[0, 0] = vidLength
+    vals[0, 1] = vidPerc
+
+    predTime = model.predict(vals)
+    print(f'Should take {predTime} to complete according to ML model')
+
     if vidLength > 60 * 45:
         return { 'success':  False, 'message': 'Error, video length is greater than 45 minutes.' }
 
     cur = con.cursor()
-    cur.execute("SELECT vid_id, percent, stage FROM nutstash.nutstash WHERE vid_id = %s AND percent=%s", (vid_id, vidPerc))
-    rows = cur.fetchall()
+    try:
+        cur.execute("SELECT vid_id, percent, stage FROM nutstash.nutstash WHERE vid_id = %s AND percent=%s", (vid_id, vidPerc))
+        rows = cur.fetchall()
+    except Exception as e:
+        print(f'Failed to commit: {e}')
+        con.rollback()
+    else:
+        con.commit()
+
     if rows:
         row = rows[0]
         if row[2] != 'done':
@@ -76,7 +96,7 @@ def submit():
 
     if not yt_url.startswith('https://youtube.com/') and not yt_url.startswith('https://www.youtube.com/'):
         return { 'success': False, 'message': 'Invalid URL' }
-    return { 'success': True, 'videoId': vid_id, 'alreadyShortened': False }
+    return { 'success': True, 'videoId': vid_id, 'alreadyShortened': False, 'etaTime': predTime.ravel()[0] }
 
 
     # filename = f'{vid_id}'
