@@ -137,5 +137,5 @@ def process_video(url, ratio=0.5):
     intervals = summarize(doc, sents, ratio=ratio)
     make_video(video_path, intervals, output_path)
 
-url = 'https://www.youtube.com/watch?v=7ESqznshez0'
+url = 'https://www.youtube.com/watch?v=OuC519ni1aE'
 process_video(url)

@@ -1,5 +1,6 @@
 from wutils.general import save_pickle, load_pickle
 import json
+from datetime import timedelta
 
 def transcribe_gcs_with_word_time_offsets(gcs_uri):
     """Transcribe the given audio file asynchronously and output the word time
@@ -35,8 +36,8 @@ def transcribe_gcs_with_word_time_offsets(gcs_uri):
             end_time = word_info.end_time
             words.append({
                 'word': word,
-                'start_time': word_info.start_time.microseconds,
-                'end_time': word_info.end_time.microseconds
+                'start_time': word_info.start_time / timedelta(milliseconds=1),
+                'end_time': word_info.end_time / timedelta(milliseconds=1)
             })
 
             print(
@@ -45,5 +46,5 @@ def transcribe_gcs_with_word_time_offsets(gcs_uri):
     return words
 
 
-with open('transcript.txt', 'w') as f:
-    json.dump(transcribe_gcs_with_word_time_offsets('gs://nutshell-audio/test/The 4 Personality Types - Which One Are You-9Dw36ve0Lwc.flac'), f)
+with open('transcript.json', 'w') as f:
+    json.dump(transcribe_gcs_with_word_time_offsets('gs://nutshell-audio/psych.flac'), f)
