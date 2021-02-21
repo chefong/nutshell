@@ -21,7 +21,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 VID_DIR='./videos'
 lookup = {}
 
-con = psycopg2.connect(database="postgres", user="postgres", password="almond", host="34.94.74.255", port="5432")
+con = psycopg2.connect(database="postgres", user="postgres", password="almond", host="10.36.224.3", port="5432")
 print("Database opened successfully", flush=True)
 
 @app.route('/')
