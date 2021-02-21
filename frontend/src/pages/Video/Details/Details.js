@@ -1,7 +1,7 @@
 import React from 'react';
 import './Details.less';
 import infoIcon from '../../../assets/images/info.svg';
-import { Placeholder } from 'rsuite';
+import { Placeholder, Whisper, Tooltip } from 'rsuite';
 import Graph from './Graph';
 
 const { Paragraph } = Placeholder;
@@ -23,7 +23,17 @@ function Details(props) {
       <div className="Details__graph">
         <div className="Details__graph-header">
           <h3 className="Details__graph-title">Reading Level Over Time</h3>
-          <img src={infoIcon} alt=""/>
+          <Whisper
+            trigger="click"
+            placement="top"
+            speaker={
+              <Tooltip>
+                The difficulty of comprehension in the shortened video over time.
+              </Tooltip>
+            }
+          >
+            <img src={infoIcon} alt=""/>
+          </Whisper>
         </div>
         {readingLevels && readingLevels.length > 0 ? (
           <Graph readingLevels={readingLevels} xLabels={readingLevelsXLabels} />
@@ -35,7 +45,17 @@ function Details(props) {
         <div className="Details__stats-video-duration">
           <div className="Details__stats-header">
             <h3 className="Details__stats-title">Video Duration</h3>
-            <img src={infoIcon} alt=""/>
+            <Whisper
+              trigger="click"
+              placement="top"
+              speaker={
+                <Tooltip>
+                  The length of the shortened video and how much it was shortened by relative to the original video.
+                </Tooltip>
+              }
+            >
+              <img src={infoIcon} alt=""/>
+            </Whisper>
           </div>
           {durationTime ? (
             <div className="Details__stats-info">
@@ -49,7 +69,17 @@ function Details(props) {
         <div className="Details__stats-read-time">
           <div className="Details__stats-header">
             <h3 className="Details__stats-title">Transcript Read Time</h3>
-            <img src={infoIcon} alt=""/>
+            <Whisper
+              trigger="click"
+              placement="top"
+              speaker={
+                <Tooltip>
+                  How long it takes to read the shortened video and how much it was shortened by relative to the original video.
+                </Tooltip>
+              }
+            >
+              <img src={infoIcon} alt=""/>
+            </Whisper>
           </div>
           {readTime ? (
             <div className="Details__stats-info">

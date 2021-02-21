@@ -1,1 +1,1 @@
-export const BASE_URL = 'http://104.33.84.28:2020';
+export const BASE_URL = 'https://nutshell-api.wls.ai';
