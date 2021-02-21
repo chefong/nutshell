@@ -5,73 +5,19 @@ import Button from '../../components/Button/Button';
 import logo from '../../assets/images/logo.svg';
 import { Link } from 'react-router-dom';
 import closeIcon from '../../assets/images/x.svg';
-import blackThumbnail from '../../assets/images/black-thumbnail.png';
-import { Modal, Placeholder, Loader } from 'rsuite';
+import { Modal, Loader } from 'rsuite';
 import { useParams } from 'react-router-dom';
+import Overview from './Overview/Overview';
+import Details from './Details/Details';
+import clsx from 'clsx';
 
-const mockTranscriptInfo = {
-  videoTitle: 'CSS Outline vs. Border',
-  keypoints: [
-    {
-      title: 'Keypoint 1',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
-    },
-    {
-      title: 'Keypoint 2',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
-    },
-    {
-      title: 'Keypoint 3',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
-    },
-    {
-      title: 'Keypoint 1',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
-    },
-    {
-      title: 'Keypoint 2',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
-    },
-    {
-      title: 'Keypoint 3',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fermentum arcu mi, aliquet adipiscing id. Leo et dui habitasse erat suspendisse placerat quisque vitae diam. Sapien posuere facilisi mattis ut enim vitae lectus parturient nulla. Morbi felis molestie eget arcu.',
-    },
-  ],
-};
-
-const mockKeypointsInfo = [
-  {
-    title: 'Adding outlines won’t influence the layout. asd a jo oaj fo joiaj a  fopdsaijfsaojf ',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-];
-
-const { Paragraph } = Placeholder;
+const tabs = ['Overview', 'Details'];
 
 function Video() {
   const [showBanner, setShowBanner] = useState(true);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [videoData, setVideoData] = useState(null);
+  const [activeTab, setActiveTab] = useState('Overview');
   const { videoId } = useParams();
 
   useEffect(() => {
@@ -101,6 +47,23 @@ function Video() {
     );
   };
 
+  const handleTabClick = (e, tabName) => {
+    e.preventDefault();
+    setActiveTab(tabName);
+  };
+
+  const renderTabs = () => {
+    return (
+      <div className="Video__tabs">
+        <div className="Video__tabs-container">
+          {tabs.map(tab => (
+            <div className={clsx('Video__tab', tab === activeTab && 'Video__tab--underline')} onClick={e => handleTabClick(e, tab)}>{tab}</div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="Video">
       <div className="Video__navbar">
@@ -117,46 +80,12 @@ function Video() {
           <Loader speed="slow" size="lg" className="Video__player-loader" />
         </div>
       )}
-      <div className="Video__info">
-        <div className="Video__info-transcript">
-          {videoData ? (
-            <>
-              <div className="Video__info-transcript-header">
-                <h2 className="Video__info-transcript-title">{mockTranscriptInfo.videoTitle}</h2>
-                <Button appearance="ghost">Original Video</Button>
-              </div>
-              {mockTranscriptInfo.keypoints.map(keypoint => (
-                <div className="Video__info-transcript-keypoint">
-                  <h3 className="Video__info-transcript-keypoint-title">{keypoint.title}</h3>
-                  <p className="Video__info-transcript-keypoint-description">{keypoint.description}</p>
-                </div>
-              ))}
-            </>
-          ) : (
-            <Paragraph rows={10} style={{ marginTop: 32, marginBottom: 24 }} />
-          )}
-        </div>
-        <div className="Video__info-keypoints">
-          <h3 className="Video__info-keypoints-title">Keypoints</h3>
-          {videoData ? (
-            <>
-              {mockKeypointsInfo.map((keypoint, index) => (
-                <div className="Video__info-keypoint">
-                  <img src={blackThumbnail} alt=""/>
-                  <div className="Video__info-keypoint-metadata">
-                    <p className="Video__info-keypoint-metadata-title">{index + 1}. {keypoint.title}</p>
-                    <div className="Video__info-keypoint-badge">
-                      {keypoint.timestamp}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </>
-          ) : (
-            <Paragraph rows={8} style={{ marginBottom: 20 }} />
-          )}
-        </div>
-      </div>
+      {renderTabs()}
+      {activeTab === 'Overview' ? (
+        <Overview />
+      ) : (
+        <Details />
+      )}
       <Modal size='sm' show={showInfoModal} onHide={handleModalClose} className="Video__info-modal">
         <Modal.Header className="Video__info-modal-header">
           <Modal.Title>Previously Processed Videos</Modal.Title>

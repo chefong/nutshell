@@ -1,0 +1,125 @@
+@import '../../../variables.less';
+
+.Overview__info {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 40px auto;
+
+  .Overview__info-transcript {
+    box-shadow: @card-shadow;
+    background-color: white;
+    width: 704px;
+    padding: 0 36px 14px 36px;
+    border-radius: 20px;
+    margin-right: 20px;
+    max-height: 500px;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: @grey-color;
+      border-radius: 5px;
+    }
+
+    .Overview__info-transcript-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background-color: white;
+      padding-top: 36px;
+      padding-bottom: 36px;
+
+      .Overview__info-transcript-title {
+        font-size: 24px;
+        font-weight: 900;
+        line-height: normal;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+        margin-right: 12px;
+      }
+    }
+
+    .Overview__info-transcript-keypoint-title {
+      font-size: 18px;
+      line-height: normal;
+    }
+
+    .Overview__info-transcript-keypoint-description {
+      margin-bottom: 22px;
+    }
+  }
+
+  .Overview__info-keypoints {
+    box-shadow: @card-shadow;
+    background-color: white;
+    width: 466px;
+    border-radius: 20px;
+    padding: 0 36px 14px 36px;
+    max-height: 500px;
+    overflow-y: scroll;
+    
+    &::-webkit-scrollbar {
+      width: 8px;
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: @grey-color;
+      border-radius: 5px;
+    }
+
+    .Overview__info-keypoints-title {
+      font-size: 18px;
+      line-height: normal;
+      position: sticky;
+      top: 0;
+      background-color: white;
+      padding-top: 36px;
+      padding-bottom: 36px;
+    }
+
+    .Overview__info-keypoint {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 24px;
+
+      .Overview__info-keypoint-metadata {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 16px;
+
+        .Overview__info-keypoint-metadata-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .Overview__info-keypoint-badge {
+          align-self: flex-start;
+          color: @primary-color;
+          background-color: @secondary-background-color;
+          padding: 1px 8px;
+          border-radius: 5px;
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+
+  .Overview__info-placeholder {
+    margin-top: 16px;
+  }
+}
