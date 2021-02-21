@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Home.less';
-import { Slider, Loader } from 'rsuite';
+import { Slider, Modal } from 'rsuite';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import logo from '../../assets/images/logo.svg';
@@ -14,6 +14,7 @@ import clsx from 'clsx';
 import { initiateSocket } from '../../socket';
 import axios from 'axios';
 import { BASE_URL } from '../../constants';
+import Footer from '../../components/Footer/Footer';
 
 const sliderValues = {
   min: 10,
@@ -50,6 +51,12 @@ function Home(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [videoPercentage, setVideoPercentage] = useState(averageValue);
 
+  useEffect(() => {
+    if (localStorage.getItem('processingVideoId')) {
+      localStorage.removeItem('processingVideoId');
+    }
+  }, []);
+
   const handleNextClick = () => {
     setShowSlider(true);
   };
@@ -72,14 +79,15 @@ function Home(props) {
       let response;
 
       response = await axios.post(`${BASE_URL}/submit`, { videoLink, videoPercentage });
-      const { alreadyShortened, videoId } = response.data;
+      const { alreadyShortened, videoId, inProgress } = response.data;
       console.log("Response from POST", response);
 
       if (alreadyShortened) {
         setIsLoading(false);
-        history.push(`/video/${videoId}/${videoPercentage}`);
+        history.push(`/video/${videoId}/${videoPercentage}`, { alreadyShortened });
       } else {
-        axios.get(`${BASE_URL}/process/${videoId}`);
+        if (!inProgress) axios.get(`${BASE_URL}/process/${videoId}/${videoPercentage}`);
+        localStorage.setItem('processingVideoId', videoId);
         console.log("Going to /loading");
         history.push('/loading');
       }
@@ -197,6 +205,7 @@ function Home(props) {
         </div>
         <img src={aboutImage} alt=""/>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -3,8 +3,9 @@ import './Loading.less';
 import Lottie from 'react-lottie';
 import animationData from '../../assets/squirrel.json';
 import { Steps } from 'rsuite';
-import { subscribeToLoadingUpdates, disconnectSocket } from '../../socket';
+import { subscribeToLoadingUpdates, disconnectSocket, subscribeToReconnect } from '../../socket';
 import logo from '../../assets/images/logo.svg';
+import Footer from '../../components/Footer/Footer';
 
 const defaultOptions = {
   loop: true,
@@ -34,8 +35,11 @@ const LOADING_STATUS = {
 function Loading(props) {
   const { history } = props;
   const [loadingState, setLoadingState] = useState(LOADING_STATUS.EXTRACTING_VIDEO);
+  const processingVideoId = localStorage.getItem('processingVideoId');
 
   useEffect(() => {
+    subscribeToReconnect(processingVideoId);
+
     subscribeToLoadingUpdates((err, data) => {
       console.log("Got back data from socket in useEffect", data);
       const { stage, videoId, percentage } = data;
@@ -50,7 +54,7 @@ function Loading(props) {
     return () => {
       disconnectSocket();
     }
-  }, [history]);
+  }, [history, processingVideoId]);
 
   return (
     <div className="Loading">
@@ -70,6 +74,7 @@ function Loading(props) {
           ))}
         </Steps>
       </div>
+      <Footer />
     </div>
   );
 }

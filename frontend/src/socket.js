@@ -23,6 +23,12 @@ export const subscribeToLoadingUpdates = (cb) => {
   });
 }
 
+export const subscribeToReconnect = (videoLink) => {
+  socket.on('reconnect', () => {
+    if (videoLink) socket.emit('setVideo', videoLink);
+  });
+}
+
 export const susbcribeToFinish = (cb) => {
   if (!socket) return(true);
 
@@ -30,8 +36,4 @@ export const susbcribeToFinish = (cb) => {
     console.log('Websocket event received!', data);
     return cb(null, data);
   });
-}
-
-export const sendMessage = (room, message) => {
-  if (socket) socket.emit('chat', { message, room });
 }

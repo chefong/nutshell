@@ -34,51 +34,38 @@ const mockTranscriptInfo = {
   ],
 };
 
-const mockKeypointsInfo = [
-  {
-    title: 'Adding outlines won’t influence the layout. asd a jo oaj fo joiaj a  fopdsaijfsaojf ',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-  {
-    title: 'Adding outlines won’t influence the layout.',
-    timestamp: '0:45',
-  },
-];
-
 const { Paragraph } = Placeholder;
 
+function formatTime(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time - minutes * 60);
+
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
 function Overview(props) {
-  const { transcriptInfo, keypoints } = props;
+  const { sections, originalVideoLink, keypoints, onKeypointClick, videoTitle } = props;
+
+  const handleKeypointClick = (e, time) => {
+    e.preventDefault();
+    onKeypointClick(time);
+  };
 
   return (
     <div className="Overview__info">
       <div className="Overview__info-transcript">
-        {transcriptInfo ? (
+        {sections && originalVideoLink ? (
           <>
             <div className="Overview__info-transcript-header">
-              <h2 className="Overview__info-transcript-title">{mockTranscriptInfo.videoTitle}</h2>
-              <Button appearance="ghost">Original Video</Button>
+              <h2 className="Overview__info-transcript-title">{videoTitle}</h2>
+              <Button appearance="ghost">
+                <a href={originalVideoLink} target="_blank" rel="noreferrer" className="Overview__info-original">Original Video</a>
+              </Button>
             </div>
-            {mockTranscriptInfo.keypoints.map(keypoint => (
+            {sections.map(section => (
               <div className="Overview__info-transcript-keypoint">
-                <h3 className="Overview__info-transcript-keypoint-title">{keypoint.title}</h3>
-                <p className="Overview__info-transcript-keypoint-description">{keypoint.description}</p>
+                <h3 className="Overview__info-transcript-keypoint-title">{section.keySentence}</h3>
+                <p className="Overview__info-transcript-keypoint-description">{section.sentences}</p>
               </div>
             ))}
           </>
@@ -90,13 +77,13 @@ function Overview(props) {
         <h3 className="Overview__info-keypoints-title">Keypoints</h3>
         {keypoints ? (
           <>
-            {mockKeypointsInfo.map((keypoint, index) => (
-              <div className="Overview__info-keypoint">
-                <img src={blackThumbnail} alt=""/>
+            {keypoints.map(([title, time,, imageThumbnailUrl], index) => (
+              <div className="Overview__info-keypoint" onClick={e => handleKeypointClick(e, time)}>
+                <img src={imageThumbnailUrl} className="Overview__info-keypoint-thumbnail" alt=""/>
                 <div className="Overview__info-keypoint-metadata">
-                  <p className="Overview__info-keypoint-metadata-title">{index + 1}. {keypoint.title}</p>
+                  <p className="Overview__info-keypoint-metadata-title">{index + 1}. {title}</p>
                   <div className="Overview__info-keypoint-badge">
-                    {keypoint.timestamp}
+                    {formatTime(time)}
                   </div>
                 </div>
               </div>

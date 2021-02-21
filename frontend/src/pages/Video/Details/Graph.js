@@ -5,19 +5,6 @@ import { defaults } from 'react-chartjs-2';
 defaults.global.defaultFontFamily = 'Circular';
 defaults.global.defaultFontColor = '#656155';
 
-const data = {
-  labels: ['1', '2', '3', '4', '5', '6'],
-  datasets: [
-    {
-      label: '# of Votes',
-      data: [12, 19, 3, 5, 2, 3],
-      fill: true,
-      backgroundColor: 'rgba(245, 168, 55, 0.15)',
-      borderColor: '#F5A837',
-    },
-  ],
-};
-
 const options = {
   scales: {
     yAxes: [
@@ -56,6 +43,21 @@ const options = {
 };
 
 function Graph(props) {
+  const { readingLevels, xLabels } = props;
+
+  const data = {
+    labels: xLabels,
+    datasets: [
+      {
+        label: 'Reading level',
+        data: readingLevels,
+        fill: true,
+        backgroundColor: 'rgba(245, 168, 55, 0.15)',
+        borderColor: '#F5A837',
+      },
+    ],
+  };
+
   return (
     <div className="Graph">
       <Line data={data} options={options} height={236} />

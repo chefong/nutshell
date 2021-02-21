@@ -6,7 +6,19 @@ import Graph from './Graph';
 
 const { Paragraph } = Placeholder;
 
+function convertToMinutesAndSeconds(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time - minutes * 60);
+
+  return { minutes, seconds };
+}
+
 function Details(props) {
+  console.log("Got these props", props)
+  const { readTime, durationTime, readTimePercentDiff, durationTimePercentDiff, readingLevels, readingLevelsXLabels } = props;
+  const { minutes: readMinutes, seconds: readSeconds } = convertToMinutesAndSeconds(readTime);
+  const { minutes: durationMinutes, seconds: durationSeconds } = convertToMinutesAndSeconds(durationTime); 
+
   return (
     <div className="Details">
       <div className="Details__graph">
@@ -14,7 +26,7 @@ function Details(props) {
           <h3 className="Details__graph-title">Reading Level Over Time</h3>
           <img src={infoIcon} alt=""/>
         </div>
-        <Graph />
+        <Graph readingLevels={readingLevels} xLabels={readingLevelsXLabels} />
       </div>
       <div className="Details__stats">
         <div className="Details__stats-video-duration">
@@ -23,8 +35,8 @@ function Details(props) {
             <img src={infoIcon} alt=""/>
           </div>
           <div className="Details__stats-info">
-            <p><span className="Details__time">5</span> minutes &nbsp;<span className="Details__time">35</span> seconds</p>
-            <div className="Details__stats-badge">-50%</div>
+            <p><span className="Details__time">{durationMinutes}</span> minutes &nbsp;<span className="Details__time">{durationSeconds}</span> seconds</p>
+            <div className="Details__stats-badge">{Math.round(durationTimePercentDiff)}%</div>
           </div>
         </div>
         <div className="Details__stats-read-time">
@@ -33,8 +45,8 @@ function Details(props) {
             <img src={infoIcon} alt=""/>
           </div>
           <div className="Details__stats-info">
-            <p><spand className="Details__time">5</spand> minutes &nbsp;<span className="Details__time">35</span> seconds</p>
-            <div className="Details__stats-badge">-50%</div>
+            <p><span className="Details__time">{readMinutes}</span> minutes &nbsp;<span className="Details__time">{readSeconds}</span> seconds</p>
+            <div className="Details__stats-badge">{Math.round(readTimePercentDiff)}%</div>
           </div>
         </div>
       </div>

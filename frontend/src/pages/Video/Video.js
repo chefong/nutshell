@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Video.less';
 import { Player, BigPlayButton } from 'video-react';
 import Button from '../../components/Button/Button';
@@ -10,19 +10,36 @@ import { useParams } from 'react-router-dom';
 import Overview from './Overview/Overview';
 import Details from './Details/Details';
 import clsx from 'clsx';
+import axios from 'axios';
+import { BASE_URL } from '../../constants';
+import Footer from '../../components/Footer/Footer';
 
 const tabs = ['Overview', 'Details'];
 
-function Video() {
-  const [showBanner, setShowBanner] = useState(true);
+function Video(props) {
+  const { location } = props;
+  const [showBanner, setShowBanner] = useState(location && location.state && location.state.alreadyShortened);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [videoData, setVideoData] = useState(null);
   const [activeTab, setActiveTab] = useState('Overview');
-  const { videoId } = useParams();
+  const { videoId, percentage } = useParams();
+  const videoRef = useRef(null);
 
   useEffect(() => {
+    const getVideoData = async () => {
+      console.log("Got these from useParams", videoId, percentage);
+      try {
+        const { data } = await axios.get(`${BASE_URL}/video/${videoId}/${percentage}`);
+        console.log("Got back data from /video/videoId/percentage", data);
+        setVideoData(data);
+      } catch (error) {
+        console.error("Got an error from /video/videoId/percentage");
+        setVideoData(null);
+      }
+    };
 
-  }, []);
+    getVideoData();
+  }, [videoId, percentage]);
 
   const handleBannerClose = (e) => {
     e.preventDefault();
@@ -64,6 +81,11 @@ function Video() {
     );
   };
 
+  const handleKeypointClick = (time) => {
+    console.log("Going to this time in the video", time);
+    if (videoRef && videoRef.current) videoRef.current.seek(time);
+  };
+
   return (
     <div className="Video">
       <div className="Video__navbar">
@@ -71,8 +93,8 @@ function Video() {
         <Link to="/" className="Video__navbar-back"><Button appearance="primary">Start Again</Button></Link>
       </div>
       {showBanner && renderInfoBanner()}
-      {videoData ? (
-        <Player src='http://media.w3.org/2010/05/bunny/movie.mp4' fluid={false} height={500} width="100%">
+      {videoData && videoData.shortenedLink ? (
+        <Player src={videoData.shortenedLink} fluid={false} height={500} width="100%" ref={videoRef}>
           <BigPlayButton position="center" />
         </Player>
       ) : (
@@ -82,10 +104,24 @@ function Video() {
       )}
       {renderTabs()}
       {activeTab === 'Overview' ? (
-        <Overview />
+        <Overview
+          sections={videoData && videoData.sections}
+          originalVideoLink={videoData && videoData.videoLink}
+          keypoints={videoData && videoData.timeAndSentence}
+          onKeypointClick={handleKeypointClick}
+          videoTitle={videoData && videoData.title}
+        />
       ) : (
-        <Details />
+        <Details
+          readTime={videoData && videoData.stats && videoData.stats.readTimeShort}
+          readTimePercentDiff={videoData && videoData.stats && videoData.stats.readTimePercentDiff}
+          durationTime={videoData && videoData.stats && videoData.stats.shortenedLength}
+          durationTimePercentDiff={videoData && videoData.stats && videoData.stats.percentShortened}
+          readingLevels={videoData && videoData.stats && videoData.stats.readingLevels}
+          readingLevelsXLabels={videoData && videoData.stats && videoData.stats.xAxisLabels}
+        />
       )}
+      <Footer />
       <Modal size='sm' show={showInfoModal} onHide={handleModalClose} className="Video__info-modal">
         <Modal.Header className="Video__info-modal-header">
           <Modal.Title>Previously Processed Videos</Modal.Title>
@@ -96,7 +132,7 @@ function Video() {
         <Modal.Footer>
           <div className="Video__info-modal-footer">
             <Button onClick={handleModalClose} appearance="primary">
-              Ok
+              Got It
             </Button>
           </div>
         </Modal.Footer>
