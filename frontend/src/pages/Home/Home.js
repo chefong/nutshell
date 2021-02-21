@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import './Home.less';
-import { Slider } from 'rsuite';
+import { Slider, Loader } from 'rsuite';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import logo from '../../assets/images/logo.svg';
-import githubButton from '../../assets/images/github-button.svg';
 import githubIcon from '../../assets/images/github.svg';
 import videoImage from '../../assets/images/about-video.svg';
 import transcriptImage from '../../assets/images/about-transcript.svg';

@@ -15,7 +15,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/loading" component={Loading} />
-          <Route exact path="/video" component={Video} />
+          <Route path="/video/:videoId" component={Video} />
         </Switch>
       </Router>
     </div>

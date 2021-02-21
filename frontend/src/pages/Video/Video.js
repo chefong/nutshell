@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Video.less';
 import { Player, BigPlayButton } from 'video-react';
 import Button from '../../components/Button/Button';
@@ -6,7 +6,8 @@ import logo from '../../assets/images/logo.svg';
 import { Link } from 'react-router-dom';
 import closeIcon from '../../assets/images/x.svg';
 import blackThumbnail from '../../assets/images/black-thumbnail.png';
-import { Modal } from 'rsuite';
+import { Modal, Placeholder, Loader } from 'rsuite';
+import { useParams } from 'react-router-dom';
 
 const mockTranscriptInfo = {
   videoTitle: 'CSS Outline vs. Border',
@@ -65,9 +66,17 @@ const mockKeypointsInfo = [
   },
 ];
 
+const { Paragraph } = Placeholder;
+
 function Video() {
   const [showBanner, setShowBanner] = useState(true);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [videoData, setVideoData] = useState(null);
+  const { videoId } = useParams();
+
+  useEffect(() => {
+
+  }, []);
 
   const handleBannerClose = (e) => {
     e.preventDefault();
@@ -99,37 +108,53 @@ function Video() {
         <Link to="/" className="Video__navbar-back"><Button appearance="primary">Start Again</Button></Link>
       </div>
       {showBanner && renderInfoBanner()}
-      <div className="Video__player">
+      {videoData ? (
         <Player src='http://media.w3.org/2010/05/bunny/movie.mp4' fluid={false} height={500} width="100%">
           <BigPlayButton position="center" />
         </Player>
-      </div>
+      ) : (
+        <div className="Video__player-placeholder">
+          <Loader speed="slow" size="lg" className="Video__player-loader" />
+        </div>
+      )}
       <div className="Video__info">
         <div className="Video__info-transcript">
-          <div className="Video__info-transcript-header">
-            <h2 className="Video__info-transcript-title">{mockTranscriptInfo.videoTitle}</h2>
-            <Button appearance="ghost">Original Video</Button>
-          </div>
-          {mockTranscriptInfo.keypoints.map(keypoint => (
-            <div className="Video__info-transcript-keypoint">
-              <h3 className="Video__info-transcript-keypoint-title">{keypoint.title}</h3>
-              <p className="Video__info-transcript-keypoint-description">{keypoint.description}</p>
-            </div>
-          ))}
+          {videoData ? (
+            <>
+              <div className="Video__info-transcript-header">
+                <h2 className="Video__info-transcript-title">{mockTranscriptInfo.videoTitle}</h2>
+                <Button appearance="ghost">Original Video</Button>
+              </div>
+              {mockTranscriptInfo.keypoints.map(keypoint => (
+                <div className="Video__info-transcript-keypoint">
+                  <h3 className="Video__info-transcript-keypoint-title">{keypoint.title}</h3>
+                  <p className="Video__info-transcript-keypoint-description">{keypoint.description}</p>
+                </div>
+              ))}
+            </>
+          ) : (
+            <Paragraph rows={10} style={{ marginTop: 32, marginBottom: 24 }} />
+          )}
         </div>
         <div className="Video__info-keypoints">
           <h3 className="Video__info-keypoints-title">Keypoints</h3>
-          {mockKeypointsInfo.map((keypoint, index) => (
-            <div className="Video__info-keypoint">
-              <img src={blackThumbnail} alt=""/>
-              <div className="Video__info-keypoint-metadata">
-                <p className="Video__info-keypoint-metadata-title">{index + 1}. {keypoint.title}</p>
-                <div className="Video__info-keypoint-badge">
-                  {keypoint.timestamp}
+          {videoData ? (
+            <>
+              {mockKeypointsInfo.map((keypoint, index) => (
+                <div className="Video__info-keypoint">
+                  <img src={blackThumbnail} alt=""/>
+                  <div className="Video__info-keypoint-metadata">
+                    <p className="Video__info-keypoint-metadata-title">{index + 1}. {keypoint.title}</p>
+                    <div className="Video__info-keypoint-badge">
+                      {keypoint.timestamp}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              ))}
+            </>
+          ) : (
+            <Paragraph rows={8} style={{ marginBottom: 20 }} />
+          )}
         </div>
       </div>
       <Modal size='sm' show={showInfoModal} onHide={handleModalClose} className="Video__info-modal">
