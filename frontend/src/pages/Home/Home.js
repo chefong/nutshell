@@ -15,6 +15,7 @@ import { initiateSocket } from '../../socket';
 import axios from 'axios';
 import { BASE_URL } from '../../constants';
 import Footer from '../../components/Footer/Footer';
+import { Link, Element } from 'react-scroll';
 
 const sliderValues = {
   min: 10,
@@ -162,8 +163,8 @@ function Home(props) {
         <img src={logo} alt=""/>
         <div className="Home__navbarlinks">
           <ul className="Home__navbarlinks-list">
-            <li>Features</li>
-            <li>About</li>
+            <li><Link to="features" offset={-140} smooth>Features</Link></li>
+            <li><Link to="about" smooth>About</Link></li>
             <a href="https://github.com/chefong/SacHacks2021" target="_blank" rel="noreferrer" className="Home__navbar-button-link">
               <Button appearance="ghost">
                 <img className="Home__navbar-github-icon" src={githubIcon} alt=""/>
@@ -183,30 +184,34 @@ function Home(props) {
           renderInputForm()
         )}
       </div>
-      {displayContent.map(content => (
-        <div className={clsx('Home__display', content.imagePlacement === 'right' && 'Home__display--reverse')}>
-          <img src={content.image} alt=""/>
-          <div className="Home__display-content">
-            <h2 className="Home__display-content-title">{content.title}</h2>
-            <p className="Home__display-content-description">{content.description}</p>
-            {/* <div className="Home__learn">
-              <p className="Home__learn-link">Learn More</p>
-              <img src={rightArrow} alt=""/>
-            </div> */}
+      <Element name="features">
+        {displayContent.map(content => (
+          <div className={clsx('Home__display', content.imagePlacement === 'right' && 'Home__display--reverse')}>
+            <img src={content.image} alt=""/>
+            <div className="Home__display-content">
+              <h2 className="Home__display-content-title">{content.title}</h2>
+              <p className="Home__display-content-description">{content.description}</p>
+              {/* <div className="Home__learn">
+                <p className="Home__learn-link">Learn More</p>
+                <img src={rightArrow} alt=""/>
+              </div> */}
+            </div>
           </div>
+        ))}
+      </Element>
+      <Element name="about">
+        <div className="Home__about">
+          <div className="Home__about-content">
+            <h2 className="Home__about-title">About Nutshell</h2>
+            <p className="Home__about-description">You have an exam coming up. The only materials you have to study off of are the 20, one-hour long, lecture videos that your professor haphazardly uploaded. We’ve been there and we’re here to help you get through it.</p>
+            <br />
+            <p className="Home__about-description">Nutshell is created by a group of students who are more than familiar with the difficulty of learning from home. We want to create a learning tool that helps students digest content easier and more efficiently.</p>
+            <br />
+            <p className="Home__about-description">We have one mission: to create a delightful learning experience to help students through these difficult times.</p>
+          </div>
+          <img src={aboutImage} alt=""/>
         </div>
-      ))}
-      <div className="Home__about">
-        <div className="Home__about-content">
-          <h2 className="Home__about-title">About Nutshell</h2>
-          <p className="Home__about-description">You have an exam coming up. The only materials you have to study off of are the 20, one-hour long, lecture videos that your professor haphazardly uploaded. We’ve been there and we’re here to help you get through it.</p>
-          <br />
-          <p className="Home__about-description">Nutshell is created by a group of students who are more than familiar with the difficulty of learning from home. We want to create a learning tool that helps students digest content easier and more efficiently.</p>
-          <br />
-          <p className="Home__about-description">We have one mission: to create a delightful learning experience to help students through these difficult times.</p>
-        </div>
-        <img src={aboutImage} alt=""/>
-      </div>
+      </Element>
       <Footer />
     </div>
   );
