@@ -17,4 +17,4 @@ def upload_to_bucket(blob_name, path_to_file, bucket_name):
     #returns a public url
     return blob.media_link, blob.public_url
 
-print(upload_to_bucket('css.flac', './css.flac', 'nutshell-audio'))
+print(upload_to_bucket('psych.flac', './psych.flac', 'nutshell-audio'))

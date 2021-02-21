@@ -46,7 +46,8 @@ with open('./transcript.json', 'r') as f:
         sents.append(curr_sent[:-1])
 
 model = Summarizer()
-summary = model(doc, num_sentences=40)
+N = 5
+summary = model(doc, num_sentences=N)
 print(doc)
 print(cnt)
 
@@ -59,7 +60,7 @@ intervals = merge_intervals(intervals)
 print(intervals)
 
 from moviepy.editor import *
-clip = VideoFileClip("css.mp4")
+clip = VideoFileClip("psych.mp4")
 clips = []
 for i in range(len(intervals)):
     st, end = intervals[i]
@@ -67,10 +68,10 @@ for i in range(len(intervals)):
     # ffmpeg_extract_subclip("css.mp4", st, end, targetname="pieces/piece{}.mp4".format(i))
 
 final = concatenate_videoclips(clips)
-final.write_videofile("output.mp4")
+final.write_videofile(f"psych(n={N}).mp4")
 
 print('-'*25)
 print(summary) 
 # print(sents)
-# print(len(sents), len(sent_start), len(sent_end))
+print(len(sents))
 # print(list(zip(sent_start, sent_end)))
