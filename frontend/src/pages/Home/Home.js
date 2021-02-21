@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Home.less';
-import { Slider, Modal } from 'rsuite';
+import { Slider, Alert } from 'rsuite';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import logo from '../../assets/images/logo.svg';
@@ -45,6 +45,8 @@ const displayContent = [
   },
 ];
 
+const alertDuration = 3000;
+
 function Home(props) {
   const { history } = props;
   const [videoLink, setVideoLink] = useState('');
@@ -80,8 +82,12 @@ function Home(props) {
       let response;
 
       response = await axios.post(`${BASE_URL}/submit`, { videoLink, videoPercentage });
-      const { alreadyShortened, videoId, inProgress, etaTime } = response.data;
+      const { alreadyShortened, videoId, inProgress, etaTime, success, message } = response.data;
       console.log("Response from POST", response);
+
+      if (!success && message) {
+        throw new Error(message);
+      }
 
       if (alreadyShortened) {
         setIsLoading(false);
@@ -95,7 +101,11 @@ function Home(props) {
 
       setIsLoading(false);
     } catch (error) {
+      const { message } = error;
       console.log("Got an error from submit", error);
+      if (message) {
+        Alert.error(message, alertDuration);
+      }
       setIsLoading(false);
     }
   };
