@@ -72,7 +72,7 @@ function Loading(props) {
         <img src={logo} alt=""/>
       </div>
       {showBanner && <div className="Loading__etaBanner">
-        <p className="Video__banner-text">According to our ML models, your video should done in about {Math.floor(etaTime / 60)} minute(s).</p>
+        <p className="Video__banner-text">According to our ML models, your video should be done in about {Math.floor(etaTime / 60)} minute(s).</p>
         <img src={closeIcon} className="Loading__etaBanner-close" onClick={handleBannerClose} alt=""/>
       </div>}
       <div className="Loading__lottie">
