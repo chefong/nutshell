@@ -14,7 +14,7 @@ THUMBNAIL_DIR = 'thumbnails'
 USE_REDIS = True
 
 if USE_REDIS:
-    r = redis.Redis(host='10.199.215.51', port=6379, decode_responses=True)
+    r = redis.Redis(host='10.36.225.3', port=6379, decode_responses=True)
 
 def upload_to_bucket(blob_name, path_to_file):
     storage_client = storage.Client.from_service_account_json(
