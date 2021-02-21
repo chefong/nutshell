@@ -1,3 +1,4 @@
+import time
 from flask import Flask, request
 from pytube import YouTube, extract
 import psycopg2
@@ -31,9 +32,10 @@ def update_progress(vid_id, stage):
     con.commit()
     if vid_id not in lookup:
         print('WARNING: unregistered socket')
-    socketio.emit('statusUpdate', {
-        'stage': stage
-    }, room=lookup[vid_id])
+    else:
+        socketio.emit('statusUpdate', {
+            'stage': stage
+        }, room=lookup[vid_id])
     print(f'Moved on to stage: {stage}')
 
 @app.route('/submit', methods = ['POST'])
@@ -47,6 +49,10 @@ def submit():
     vid_id = extract.video_id(yt_url)
     vidPerc = request.json['videoPercentage']
     vidTitle = video.title
+    vidLength = video.length
+
+    if vidLength > 60 * 45:
+        return { 'success':  False, 'message': 'Error, video length is greater than 45 minutes.' }
 
     cur = con.cursor()
     cur.execute("SELECT vid_id, percent, stage FROM nutstash.nutstash WHERE vid_id = %s AND percent=%s", (vid_id, vidPerc))
@@ -60,8 +66,8 @@ def submit():
     # unique index prevents race condition
     cur = con.cursor()
     try:
-        cur.execute("INSERT INTO nutstash.nutstash (videolink, vid_id, percent, stage, title) VALUES (%s, %s, %s, %s, %s)",
-            (yt_url, vid_id, vidPerc, 'pending',  vidTitle))
+        cur.execute("INSERT INTO nutstash.nutstash (videolink, vid_id, percent, stage, title, starttime) VALUES (%s, %s, %s, %s, %s, %s)",
+            (yt_url, vid_id, vidPerc, 'pending', vidTitle, time.time()))
     except Exception as e:
         print(f'Failed to commit: {e}')
         con.rollback()
@@ -104,13 +110,16 @@ def flask_process_video(videoId, percent):
     video_link, percent_db = rows[0]
     process_video(video_link, con, ratio=percent_db/100, cb=update_progress)
     cur = con.cursor()
-    cur.execute("UPDATE nutstash.nutstash SET stage=%s WHERE vid_id = %s", ('done', videoId))
+    cur.execute("UPDATE nutstash.nutstash SET stage=%s, endtime=%s WHERE vid_id = %s", ('done', time.time(), videoId))
     con.commit()
-    socketio.emit('statusUpdate', {
-        'stage': 'done',
-        'percentage': percent_db,
-        'videoId': videoId
-    }, room=lookup[videoId])
+    if videoId in lookup:
+        socketio.emit('statusUpdate', {
+            'stage': 'done',
+            'percentage': percent_db,
+            'videoId': videoId
+        }, room=lookup[videoId])
+    else:
+        print('WARNING: videoId not found in lookup')
     return { 'status': 'success' }
 
 @socketio.on('connect')
