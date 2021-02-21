@@ -12,12 +12,12 @@ for curr_url in urls:
     print('Working on: ', curr_url)
     r = requests.post('http://localhost:2020/submit', json ={
         'videoLink': curr_url,
-        'videoPercentage': 50
+        'videoPercentage': 40
     })
     result = r.json()
     print('res: ', result)
 
-    r2 = requests.get(f'http://localhost:2020/process/{result["videoId"]}/50')
+    r2 = requests.get(f'http://localhost:2020/process/{result["videoId"]}/40')
     print('res: ', r2.json())
     f.write(result['videoId'] + '\n')
 
