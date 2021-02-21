@@ -7,7 +7,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@font-face {
+  font-family: "Mogena";
+  src: url("./assets/fonts/Mogena.ttf");
+}
+
+
+@font-face {
+  font-family: "Circular";
+  src: url("./assets/fonts/lineto-circular-pro-book.ttf");
+}
+
+@font-face {
+  font-family: "Circular";
+  font-weight: 900;
+  src: url("./assets/fonts/lineto-circular-pro-bold.ttf");
 }

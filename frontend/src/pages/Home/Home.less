@@ -1,0 +1,190 @@
+@import '../../variables.less';
+
+.Home {
+  position: relative;
+
+  .Home__navbar {
+    height: 96px;
+    background-color: white;
+    box-shadow: @card-shadow;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 122px;
+
+    .Home__navbarlinks {
+      .Home__navbarlinks-list {
+        list-style-type: none;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+
+        *:hover {
+          cursor: pointer;
+        }
+
+        li {
+          float: left;
+          margin-right: 75px;
+        }
+
+        .Home__navbar-github-icon {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+
+  .Home__landing {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    background-image: url('../../assets/images/acorn-background.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    .Home__content {
+      text-align: center;
+      max-width: 768px;
+      margin-top: -96px;
+    
+      .Home__content-title {
+        font-size: 50px;
+        font-family: "Mogena";
+        font-weight: 400;
+      }
+    }
+
+    .Home__form-description {
+      font-size: 18px;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+      margin-top: 16px;
+    }
+  
+    .Home__input-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 768px;
+      text-align: center;
+  
+      .Home__input-button {
+        margin-top: 20px;
+      }
+    }
+
+    .Home__input-slider {
+      width: 734px;
+
+      .Home__slider {
+        margin-top: 40px;
+
+        .Home__slider-labels {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          margin-top: 12px;
+
+          .Home__slider-label {
+            margin-top: 0;
+          }
+        }
+      }
+
+      .Home__slider-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 20px;
+
+        .Home__slider-back {
+          color: @text-color;
+          padding: 10px 20px;
+        }
+
+        .Home__slider-submit {
+          padding: 10px 20px;
+        }
+
+        * {
+          margin: 0 8px;
+        }
+      }
+    }
+  }
+
+  .Home__display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 124px;
+    margin-bottom: 150px;
+
+    * {
+      margin: 0 20px;
+    }
+
+    .Home__display-content {
+      .Home__display-content-title {
+        font-family: 'Mogena';
+        font-weight: 400;
+      }
+  
+      .Home__display-content-description {
+        margin-top: 18px;
+      }
+
+      .Home__learn {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 18px;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        .Home__learn-link {
+          color: @primary-color;
+          font-weight: 700;
+          margin-right: 12px;
+          margin-left: 0;
+        }
+      }
+    }
+  }
+
+  .Home__display--reverse {
+    flex-direction: row-reverse;
+  }
+
+  .Home__about {
+    min-height: 424px;
+    background-image: url('../../assets/images/about-bg.png');
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 124px;
+
+    .Home__about-content {
+      .Home__about-title {
+        font-family: 'Mogena';
+        font-weight: 400;
+        font-size: 24px;
+      }
+  
+      .Home__about-description {
+        max-width: 588px;
+        font-size: 16px;
+      }
+    }
+  }
+}

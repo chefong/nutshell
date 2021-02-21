@@ -1,0 +1,51 @@
+@import '../../variables.less';
+
+.Loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+
+  .Loading__logo {
+    margin-bottom: 20px;
+    margin-top: 40px;
+  }
+
+  .Loading__lottie {
+    pointer-events: none;
+    margin-bottom: 20px;
+  }
+
+  .Loading__steps {
+    padding-bottom: 100px;
+  }
+}
+
+.rs-steps-item-status-process {
+  // .rs-steps-item-icon-wrapper {
+  //   transform: scale(1);
+  //   animation: pulse 2s infinite;
+  // }
+
+  .rs-steps-item-title {
+    color: @text-color !important;
+  }
+}
+
+@keyframes pulse {
+	0% {
+		transform: scale(0.95);
+		box-shadow: 0 0 0 0 rgba(245, 168, 55, 0.7);
+	}
+
+	70% {
+		transform: scale(1);
+		box-shadow: 0 0 0 10px rgba(245, 168, 55, 0);
+	}
+
+	100% {
+		transform: scale(0.95);
+		box-shadow: 0 0 0 0 rgba(245, 168, 55, 0);
+	}
+}

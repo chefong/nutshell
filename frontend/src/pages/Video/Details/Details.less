@@ -1,0 +1,86 @@
+@import '../../../variables.less';
+
+.Details {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 40px auto;
+
+  .Details__graph {
+    box-shadow: @card-shadow;
+    padding: 36px;
+    width: 704px;
+    height: 342px;
+    margin-right: 20px;
+    border-radius: 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    // align-items: center;
+
+    .Details__graph-header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .Details__graph-title {
+        text-align: left;
+        font-size: 18px;
+        line-height: normal;
+        margin-right: 8px;
+      }
+    }
+  }
+  
+  .Details__stats {
+    width: 466px;
+
+    .Details__stats-video-duration,
+    .Details__stats-read-time {
+      box-shadow: @card-shadow;
+      width: 100%;
+      padding: 36px;
+      border-radius: 20px;
+      background-color: white;
+    }
+
+    .Details__stats-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 24px;
+
+      .Details__stats-title {
+        font-size: 18px;
+        line-height: normal;
+        margin-right: 8px;
+      }
+    }
+
+    .Details__stats-read-time {
+      margin-top: 20px;
+    }
+
+    .Details__stats-info {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: baseline;
+
+      .Details__time {
+        font-size: 30px;
+      }
+
+      .Details__stats-badge {
+        display: flex;
+        align-items: center;
+        color: @primary-color;
+        background-color: @secondary-background-color;
+        padding: 1px 8px;
+        border-radius: 5px;
+      }
+    }
+  }
+}
