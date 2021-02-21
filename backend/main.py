@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 VID_DIR='./videos'
 
-con = psycopg2.connect(database="postgres", user="postgres", password="", host="34.94.74.255", port="5432")
+con = psycopg2.connect(database="postgres", user="postgres", password="almond", host="34.94.74.255", port="5432")
 print("Database opened successfully", flush=True)
 
 @app.route('/')
@@ -47,14 +47,15 @@ def submit():
 @app.route('/api/video/<videoId>', methods = ['GET'])
 def video(videoId):
     cur = con.cursor()
-    cur.execute("SELECT shortenedLink, timeandsentence, videoLink, stats FROM nutstash.nutstash WHERE vid_id = %s", (videoId,))
+    cur.execute("SELECT shortenedLink, timeandsentence, videoLink, stats, sections FROM nutstash.nutstash WHERE vid_id = %s", (videoId,))
     rows = cur.fetchall()
 
     return {
             'shortenedLink': rows[0][0],
             'timeAndSentence': rows[0][1],
             'videoLink': rows[0][2],
-            'stats': rows[0][3]
+            'stats': rows[0][3],
+            'sections': rows[0][4]
             }
 
 '''
