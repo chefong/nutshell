@@ -1,3 +1,4 @@
+import redis
 import json
 from summarizer import Summarizer
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
@@ -10,6 +11,10 @@ from os import path
 
 BUCKET_NAME = 'nutshell-audio'
 THUMBNAIL_DIR = 'thumbnails'
+USE_REDIS = True
+
+if USE_REDIS:
+    r = redis.Redis(host='10.199.215.51', port=6379, decode_responses=True)
 
 def upload_to_bucket(blob_name, path_to_file):
     storage_client = storage.Client.from_service_account_json(
@@ -39,11 +44,14 @@ def upload_thumbnails(video_id):
         i += 1
     return urls
 
-def transcribe_gcs_with_word_time_offsets(filename):
+def transcribe_gcs_with_word_time_offsets(video_id, filename):
     """Transcribe the given audio file asynchronously and output the word time
     offsets."""
     from google.cloud import speech
     gcs_uri = f'gs://nutshell-audio/{filename}'
+    if USE_REDIS:
+        if r.exists(video_id):
+            return json.loads(r.get(video_id))
 
     client = speech.SpeechClient()
 
@@ -72,6 +80,8 @@ def transcribe_gcs_with_word_time_offsets(filename):
                 'start_time': word_info.start_time / timedelta(milliseconds=1),
                 'end_time': word_info.end_time / timedelta(milliseconds=1)
             })
+    if USE_REDIS:
+        r.set(video_id, json.dumps(words))
     return words
 
 def merge_intervals(ints, thresh=1):
@@ -219,7 +229,7 @@ def process_video(url, conn, cb=lambda:None, ratio=0.5):
     cb(vid_id, 'uploading')
     upload_to_bucket(bucket_audio, audio_path)
     cb(vid_id, 'transcribing')
-    words = transcribe_gcs_with_word_time_offsets(bucket_audio)
+    words = transcribe_gcs_with_word_time_offsets(vid_id, bucket_audio)
     doc, sents = words2sents(words)
     cb(vid_id, 'summarizing')
     intervals, raw_intervals, summary, used_sents = summarize(doc, sents, ratio=ratio)
