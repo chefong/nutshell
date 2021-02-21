@@ -8,8 +8,8 @@ module.exports = override(
         '@base-color': '#F5A837',
         '@body-bg': '#FFFEFB',
         '@text-color': '#302E28',
-        '@loader-spin-ring-active-color': '#F5A837',
-        '@loader-spin-ring-color': 'fade(#F5A837, 25)',
+        '@loader-spin-ring-active-color': '#FFFFFF',
+        '@loader-spin-ring-color': 'fade(#FFFFFF, 10)',
       }
     }
   })

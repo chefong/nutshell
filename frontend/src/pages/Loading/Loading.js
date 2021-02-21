@@ -3,8 +3,8 @@ import './Loading.less';
 import Lottie from 'react-lottie';
 import animationData from '../../assets/squirrel.json';
 import { Steps } from 'rsuite';
-import socketIOClient from 'socket.io-client';
-import { BASE_URL } from '../../constants';
+import { subscribeToLoadingUpdates, disconnectSocket } from '../../socket';
+import logo from '../../assets/images/logo.svg';
 
 const defaultOptions = {
   loop: true,
@@ -13,19 +13,22 @@ const defaultOptions = {
 };
 
 const loadingStages = [
-  'Extracting video',
-  'Summarizing transcript',
-  'Splitting video',
-  'Stitching video',
+  'Downloading video...',
+  'Splitting audio and video...',
+  'Transcribing... (this might take a while)',
+  'Summarizing...',
+  'Stitching things together...',
 ];
 
 const lottieSize = 428;
 
 const LOADING_STATUS = {
-  EXTRACTING_VIDEO: 0,
-  SUMMARIZING_TRANSCRIPT: 1,
-  SPLITTING_VIDEO: 2,
-  STITCHING_VIDEO: 3,
+  downloading: 0,
+  demuxing: 1,
+  transcribing: 2,
+  summarizing: 3,
+  stitching: 4,
+  done: 5,
 };
 
 function Loading(props) {
@@ -33,19 +36,27 @@ function Loading(props) {
   const [loadingState, setLoadingState] = useState(LOADING_STATUS.EXTRACTING_VIDEO);
 
   useEffect(() => {
-    const socket = socketIOClient(BASE_URL);
-    socket.on('loadingUpdate', data => {
-      const { loadingStatus, videoId } = data;
-      if (loadingStatus === 'DONE' && videoId) {
-        history.push(`/video/${videoId}`);
+    subscribeToLoadingUpdates((err, data) => {
+      console.log("Got back data from socket in useEffect", data);
+      const { stage, videoId, percentage } = data;
+      if (stage === 'done' && videoId && percentage) {
+        history.push(`/video/${videoId}/${percentage}`);
+        return;
       }
 
-      setLoadingState(LOADING_STATUS[data]);
+      if (LOADING_STATUS[stage]) setLoadingState(LOADING_STATUS[stage]);
     });
+
+    return () => {
+      disconnectSocket();
+    }
   }, [history]);
 
   return (
     <div className="Loading">
+      <div className="Loading__logo">
+        <img src={logo} alt=""/>
+      </div>
       <div className="Loading__lottie">
         <Lottie options={defaultOptions}
           height={lottieSize}

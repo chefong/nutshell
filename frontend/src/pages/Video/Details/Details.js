@@ -1,12 +1,20 @@
 import React from 'react';
 import './Details.less';
 import infoIcon from '../../../assets/images/info.svg';
+import { Placeholder } from 'rsuite';
+import Graph from './Graph';
+
+const { Paragraph } = Placeholder;
 
 function Details(props) {
   return (
     <div className="Details">
       <div className="Details__graph">
-
+        <div className="Details__graph-header">
+          <h3 className="Details__graph-title">Reading Level Over Time</h3>
+          <img src={infoIcon} alt=""/>
+        </div>
+        <Graph />
       </div>
       <div className="Details__stats">
         <div className="Details__stats-video-duration">

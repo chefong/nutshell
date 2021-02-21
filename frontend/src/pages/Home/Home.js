@@ -11,10 +11,13 @@ import keypointsImage from '../../assets/images/about-keypoints.svg';
 import rightArrow from '../../assets/images/arrow-right.svg';
 import aboutImage from '../../assets/images/about.svg';
 import clsx from 'clsx';
+import { initiateSocket } from '../../socket';
+import axios from 'axios';
+import { BASE_URL } from '../../constants';
 
 const sliderValues = {
-  min: 1,
-  max: 10,
+  min: 10,
+  max: 90,
 };
 
 const averageValue = Math.floor((sliderValues.max + sliderValues.min) / 2);
@@ -45,7 +48,7 @@ function Home(props) {
   const [videoLink, setVideoLink] = useState('');
   const [showSlider, setShowSlider] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [videoLength, setVideoLength] = useState(averageValue);
+  const [videoPercentage, setVideoPercentage] = useState(averageValue);
 
   const handleNextClick = () => {
     setShowSlider(true);
@@ -59,9 +62,33 @@ function Home(props) {
     setVideoLink(value);
   };
 
-  const handleVideoSubmit = () => {
-    console.log("Submitting value", videoLink, videoLength);
-    history.push('/video');
+  const handleVideoSubmit = async () => {
+    console.log("Submitting value", videoLink, videoPercentage);
+
+    setIsLoading(true);
+    initiateSocket(videoLink);
+
+    try {
+      let response;
+
+      response = await axios.post(`${BASE_URL}/submit`, { videoLink, videoPercentage });
+      const { alreadyShortened, videoId } = response.data;
+      console.log("Response from POST", response);
+
+      if (alreadyShortened) {
+        setIsLoading(false);
+        history.push(`/video/${videoId}/${videoPercentage}`);
+      } else {
+        axios.get(`${BASE_URL}/process/${videoId}`);
+        console.log("Going to /loading");
+        history.push('/loading');
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Got an error from submit", error);
+      setIsLoading(false);
+    }
   };
 
   const renderInputForm = () => {
@@ -75,26 +102,28 @@ function Home(props) {
   };
 
   const handleSliderChange = (value) => {
-    setVideoLength(value);
+    setVideoPercentage(value);
   };
 
   const renderSliderForm = () => {
     return (
       <div className="Home__input-slider">
-        <p className="Home__form-description">Nice video! <br /> How short would you like the cropped video to be?</p>
+        <p className="Home__form-description">Nice video! <br /> How much of the video do you want to see?</p>
         <div className="Home__slider">
           <Slider
             progress
+            graduated
+            step={10}
             disabled={isLoading}
             defaultValue={averageValue}
             max={sliderValues.max}
             min={sliderValues.min}
             onChange={handleSliderChange}
-            value={videoLength}
+            value={videoPercentage}
           />
           <div className="Home__slider-labels">
-            <p className="Home__slider-label">{sliderValues.min} min</p>
-            <p className="Home__slider-label">{sliderValues.max} min</p>
+            <p className="Home__slider-label">{sliderValues.min}%</p>
+            <p className="Home__slider-label">{sliderValues.max}%</p>
           </div>
         </div>
         <div className="Home__slider-buttons">

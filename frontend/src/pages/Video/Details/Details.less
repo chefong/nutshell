@@ -4,13 +4,34 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin: 40px auto;
 
   .Details__graph {
-    padding: 36px;
     box-shadow: @card-shadow;
+    padding: 36px;
     width: 704px;
+    height: 342px;
     margin-right: 20px;
     border-radius: 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    // align-items: center;
+
+    .Details__graph-header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .Details__graph-title {
+        text-align: left;
+        font-size: 18px;
+        line-height: normal;
+        margin-right: 8px;
+      }
+    }
   }
   
   .Details__stats {
@@ -22,6 +43,7 @@
       width: 100%;
       padding: 36px;
       border-radius: 20px;
+      background-color: white;
     }
 
     .Details__stats-header {
