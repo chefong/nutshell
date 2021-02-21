@@ -53,7 +53,7 @@ def submit():
     rows = cur.fetchall()
     if rows:
         row = rows[0]
-        if row['stage'] != 'done':
+        if row[2] != 'done':
             return { 'success': True, 'alreadyShortened': True, 'inProgress': True, 'videoId': vid_id }
         return { 'success': True, 'alreadyShortened': True, 'inProgress': False, 'videoId': vid_id }
 
